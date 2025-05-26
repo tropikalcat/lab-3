@@ -500,7 +500,7 @@ public class TiendaJuegos{
 
                 double promedio = tiempo / (double) repeticiones;
 
-                // Mostrar el resultado con formato
+               
                 System.out.printf("Algoritmo: %-15s Tamaño: %-8d Atributo: %-10s Promedio: %.2f ms\n",
                         algoritmo, dataset.size(), atributo, promedio);
             }
