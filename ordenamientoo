@@ -463,47 +463,56 @@ public class TiendaJuegos{
 
 
     public static void main(String[] args) {
-        GenerateData generador = new GenerateData();
+    GenerateData generador = new GenerateData();
 
-        ArrayList<Game> juegos100 = generador.generarJuegos(100);
-        ArrayList<Game> juegos10000 = generador.generarJuegos(10_000);
-        ArrayList<Game> juegos1M = generador.generarJuegos(1_000_000);
+    ArrayList<Game> juegos100 = generador.generarJuegos(100);
+    ArrayList<Game> juegos10000 = generador.generarJuegos(10000);
+    ArrayList<Game> juegos1M = generador.generarJuegos(1000000);
 
-        System.out.println("=== Tabla Price ===");
-        medicion("price", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
+    System.out.println("=== Tabla Price ===");
+    medicion("price", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
 
-        System.out.println("\n=== Tabla Category ===");
-        medicion("category", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
+    System.out.println("\n=== Tabla Category ===");
+    medicion("category", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
 
-        System.out.println("\n=== Tabla Quality ===");
-        medicion("quality", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
-    }
+    System.out.println("\n=== Tabla Quality ===");
+    medicion("quality", new ArrayList<>(juegos100), new ArrayList<>(juegos10000), new ArrayList<>(juegos1M));
+}
 
-    public static void medicion(String atributo, ArrayList<Game>... datasets) {
-        String[] algoritmos = {"bubbleSort", "insertionSort", "selectionSort", "mergeSort", "quickSort", "collectionsSort"};
+public static void medicion(String atributo, ArrayList<Game>... datasets) {
+    String[] algoritmos = {"bubbleSort", "insertionSort", "selectionSort", "mergeSort", "quickSort", "collectionsSort"};
 
-        for (String algoritmo : algoritmos) {
-            for (ArrayList<Game> dataset : datasets) {
-                long tiempo = 0;
-                int repeticiones = 3;
+    for (String algoritmo : algoritmos) {
+        for (ArrayList<Game> dataset : datasets) {
+            long tiempo = 0;
+            int repeticiones = 3;
+            boolean excedeTiempo = false;
 
-                for (int i = 0; i < repeticiones; i++) {
-                    ArrayList<Game> datos = new ArrayList<>(dataset);
-                    Dataset ds = new Dataset(datos);
+            for (int i = 0; i < repeticiones; i++) {
+                ArrayList<Game> datos = new ArrayList<>(dataset);
+                Dataset ds = new Dataset(datos);
 
-                    long inicio = System.currentTimeMillis();
-                    ds.sortByAlgorithm(algoritmo, atributo);
-                    long fin = System.currentTimeMillis();
+                long inicio = System.currentTimeMillis();
+                ds.sortByAlgorithm(algoritmo, atributo);
+                long fin = System.currentTimeMillis();
 
-                    tiempo += (fin - inicio);
+                tiempo += (fin - inicio);
+
+                if (tiempo > 300000) { // más de 300 segundos acumulados
+                    excedeTiempo = true;
+                    break;
                 }
+            }
 
+            if (excedeTiempo) {
+                System.out.printf("Algoritmo: %-15s Tamaño: %-8d Atributo: %-10s Promedio: más de 300 segundos\n",
+                        algoritmo, dataset.size(), atributo);
+            } else {
                 double promedio = tiempo / (double) repeticiones;
-
-               
                 System.out.printf("Algoritmo: %-15s Tamaño: %-8d Atributo: %-10s Promedio: %.2f ms\n",
                         algoritmo, dataset.size(), atributo, promedio);
             }
         }
     }
+}
 }
